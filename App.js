@@ -1,12 +1,24 @@
 import { StatusBar } from 'expo-status-bar';
-import { Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import Slider from '@react-native-community/slider';
+import { useState } from 'react';
 
 const statusBarHeight = StatusBar.currentHeight
 
 export default function App() {
+
+  const [city, setCity] = useState("");
+  const [days, setDays] = useState(3);
+  const [loading, setLoading] = useState(false);
+  const [travel, setTravel] = useState("");
+
+  function handlerGenerate() {
+    console.log(city);
+    console.log(days.toFixed(0));
+  }
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-contente" translucent={true} backgroundColor='#F1F1F1' />
@@ -17,22 +29,44 @@ export default function App() {
         <TextInput 
           placeholder='Ex.: São Luis, MA'
           style={styles.input}
+          value={city}
+          onChangeText={(text) => setCity(text)}
         />
 
-        <Text style={styles.label}>Tempo de estadia: <Text style={styles.days}> 10 </Text> dias</Text>
+        <Text style={styles.label}>Tempo de estadia: <Text style={styles.days}> {days.toFixed(0)} </Text> dias</Text>
 
         <Slider
           minimumValue={1}
           maximumValue={7}
           minimumTrackTintColor="#009088"
           maximumTrackTintColor="#000000"
+          value={days}
+          onValueChange={(value) => setDays(value)}
         />
       </View>
 
-      <Pressable style={styles.button}>
+      <Pressable style={styles.button} onPress={handlerGenerate}>
         <Text style={styles.buttonText}>Gerar roteiro</Text>
         <MaterialIcons name='travel-explore' size={24} color='#FFF' />
       </Pressable>
+
+      <ScrollView contentContainerStyle={{ paddingBottom: 30, marginTop: 5 }} style={styles.containerScroll} showsVerticalScrollIndicator={false}>
+        {loading && (
+          <View style={styles.content}>
+          <Text style={styles.title}>Carregando roteiro... </Text>
+          <ActivityIndicator color="#000" size="large" />
+        </View>
+        )}
+
+        {travel && (
+          <View style={styles.content}>
+            <Text style={styles.title}>Roteiros de viagem 🤪</Text>
+            <Text>
+              {travel}
+            </Text>
+          </View>
+        )}
+      </ScrollView>
     </View>
   );
 }
@@ -88,6 +122,23 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#FFF',
     fontWeight: 'bold',
+  },
+  content: {
+    backgroundColor: '#FFF',
+    padding: 16,
+    width: '100%',
+    marginTop: 16,
+    borderRadius: 8
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 14,
+  },
+  containerScroll: {
+    width: '90%',
+    marginTop: 8,
   }
 
 });
